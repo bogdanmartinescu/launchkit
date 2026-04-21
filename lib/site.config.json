@@ -1,0 +1,81 @@
+{
+  "configured": true,
+  "templateType": "email-collection",
+  "theme": "dark",
+  "heroVariant": "split",
+  "brand": {
+    "name": "LaunchKit",
+    "primaryColor": "#3b82f6",
+    "accentColor": "#06b6d4",
+    "logoUrl": "",
+    "productImageUrl": ""
+  },
+  "product": {
+    "name": "The SaaS Launch Playbook",
+    "tagline": "From Zero to First 100 Customers",
+    "description": "A step-by-step blueprint used by 3,000+ founders to validate ideas, build an audience, and land paying customers — before writing a single line of code.",
+    "badge": "New Edition — 2025",
+    "price": 49,
+    "originalPrice": 97,
+    "currency": "USD",
+    "format": "PDF + EPUB",
+    "pages": 312,
+    "chapters": 18
+  },
+  "leadMagnet": {
+    "title": "Get Free Sample Chapter",
+    "description": "Enter your email and we'll send you Chapter 1 — Idea Validation — for free, instantly.",
+    "filePath": "/downloads/sample.pdf"
+  },
+  "pricingTiers": [
+    {
+      "name": "Starter",
+      "price": 29,
+      "period": "mo",
+      "features": [
+        "Basic cloud integration",
+        "Up to 5 team members",
+        "20GB storage",
+        "Email support"
+      ],
+      "isPopular": false,
+      "ctaLabel": "Get Started",
+      "stripePriceId": ""
+    },
+    {
+      "name": "Pro",
+      "price": 99,
+      "period": "mo",
+      "features": [
+        "Advanced cloud integration",
+        "Up to 20 team members",
+        "100GB storage",
+        "Priority email & phone support",
+        "Advanced analytics"
+      ],
+      "isPopular": true,
+      "ctaLabel": "Get Started",
+      "stripePriceId": ""
+    },
+    {
+      "name": "Enterprise",
+      "price": null,
+      "period": "mo",
+      "features": [
+        "Full cloud integration",
+        "Unlimited team members",
+        "Unlimited storage",
+        "24/7 dedicated support",
+        "Custom solutions"
+      ],
+      "isPopular": false,
+      "ctaLabel": "Contact Sales",
+      "stripePriceId": ""
+    }
+  ],
+  "integrations": {
+    "stripePublishableKey": "",
+    "stripePriceId": "price_placeholder",
+    "baseUrl": "http://localhost:3000"
+  }
+}
