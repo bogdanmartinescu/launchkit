@@ -598,8 +598,8 @@ Edition: PRO | Effort: M
 ### Phase 7 — Distribution & licensing
 Edition: both | Effort: M
 
-- [ ] Create private `launchkit/pro` repo. Copy current FREE tree as initial commit.
-- [ ] Add `scripts/sync-from-free.sh` to PRO repo + GitHub Action that runs weekly and opens a sync PR.
+- [x] Create private `launchkit/pro` repo. Copy current FREE tree as initial commit. _(Done 2026-04-22. Repo lives at `git@github.com:bogdanmartinescu/launchkit-pro.git`. Initial commit `5ce415a` sits on top of FREE `007c1ec` with no PRO-only code yet — only the sync pipeline.)_
+- [x] Add `scripts/sync-from-free.sh` to PRO repo + GitHub Action that runs weekly and opens a sync PR. _(Done. Merge-based sync — `upstream` remote + `git fetch && git merge upstream/main` into a dated sync branch. Correction to §3.3: `git subtree pull --prefix=.` is invalid; the working pattern is a plain merge from an `upstream` remote. Smoke-tested locally: exits 0 and cleans up when upstream is already merged.)_
 - [ ] Build `scripts/upgrade-to-pro.ts` in PRO repo: reads v2 FREE config, fills in PRO-only defaults.
 - [ ] Stand up purchase webhook — cloud function on marketing site that calls `octokit.repos.addCollaborator`.
 - [ ] Publish marketing site (dog-food LaunchKit PRO to build it).
