@@ -5,16 +5,21 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   BookOpen, ArrowRight, ArrowLeft, Check, Download, ExternalLink,
-  Sun, Moon, Upload, Image as ImageIcon, X,
+  Sun, Moon, Upload, Image as ImageIcon, X, Lock, Loader2, Wifi, WifiOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  listProviders,
+  type CatalogEntry,
+} from "@/lib/integrations/catalog";
+import type { IntegrationKind } from "@/lib/integrations/types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type TemplateType = "ebook" | "saas" | "email-collection";
+type TemplateType = "ebook" | "saas" | "email-collection" | "mobile-app";
 type ThemeType = "dark" | "light";
 
 interface WizardState {
@@ -41,7 +46,24 @@ interface WizardState {
     chapters: number;
   };
   leadMagnet: { title: string; description: string; filePath: string };
-  integrations: { stripePublishableKey: string; stripePriceId: string; baseUrl: string };
+  app: {
+    appStoreUrl: string;
+    playStoreUrl: string;
+    iosRating: number;
+    androidRating: number;
+    iosReviewCount: number;
+    androidReviewCount: number;
+    downloads: string;
+    category: string;
+    appIconUrl: string;
+  };
+  integrations: {
+    checkoutProvider: string;
+    emailProvider: string;
+    stripePublishableKey: string;
+    stripePriceId: string;
+    baseUrl: string;
+  };
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -82,6 +104,13 @@ const TEMPLATE_OPTIONS: Array<{
     description: "Grow your email list with a free resource. The hero is a prominent email signup form — no price, no checkout.",
     emoji: "✉️",
     bestFor: "Newsletters · Free tools · Communities",
+  },
+  {
+    id: "mobile-app",
+    label: "Mobile App",
+    description: "Promote an iOS or Android app with store badges, phone-mockup screenshots, a 3-step onboarding flow, and an optional Premium upgrade.",
+    emoji: "📱",
+    bestFor: "iOS · Android · Consumer apps",
   },
 ];
 
@@ -134,6 +163,20 @@ const HERO_VARIANTS: Record<TemplateType, Array<{ id: string; label: string; des
       preview: "║ BIG TEXT ║\n║ ─ FORM ─ ║",
     },
   ],
+  "mobile-app": [
+    {
+      id: "split",
+      label: "Split + Phone",
+      description: "Copy and store badges left, phone mockup right. Proven mobile-marketing layout.",
+      preview: "║ TEXT │ 📱 ║",
+    },
+    {
+      id: "centered",
+      label: "Centered",
+      description: "Big centered headline with store badges, phone mockup below. Maximum focus.",
+      preview: "║ ─ TEXT ─ ║\n║ ── 📱 ── ║",
+    },
+  ],
 };
 
 const STEPS = ["Template", "Hero Style", "Product", "Branding", "Finish"];
@@ -166,7 +209,24 @@ const DEFAULT_STATE: WizardState = {
     description: "Enter your email and we'll send you Chapter 1 instantly.",
     filePath: "/downloads/sample.pdf",
   },
-  integrations: { stripePublishableKey: "", stripePriceId: "", baseUrl: "http://localhost:3000" },
+  app: {
+    appStoreUrl: "",
+    playStoreUrl: "",
+    iosRating: 4.8,
+    androidRating: 4.7,
+    iosReviewCount: 0,
+    androidReviewCount: 0,
+    downloads: "",
+    category: "",
+    appIconUrl: "",
+  },
+  integrations: {
+    checkoutProvider: "stripe",
+    emailProvider: "none",
+    stripePublishableKey: "",
+    stripePriceId: "",
+    baseUrl: "http://localhost:3000",
+  },
 };
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -195,6 +255,7 @@ export default function SetupPage() {
             brand: { ...prev.brand, ...data.brand },
             product: { ...prev.product, ...data.product },
             leadMagnet: { ...prev.leadMagnet, ...data.leadMagnet },
+            app: { ...prev.app, ...data.app },
             integrations: { ...prev.integrations, ...data.integrations },
           }));
         }
@@ -508,7 +569,7 @@ export default function SetupPage() {
                         }}
                       >
                         {t === "dark" ? (
-                          <Moon className="w-6 h-6 text-indigo-400" />
+                          <Moon className="w-6 h-6 text-slate-200" />
                         ) : (
                           <Sun className="w-6 h-6 text-amber-500" />
                         )}
@@ -645,7 +706,93 @@ export default function SetupPage() {
                 </>
               )}
 
-              {state.templateType !== "saas" && (
+              {state.templateType === "mobile-app" && (
+                <>
+                  <FieldGroup label="App Store URL (iOS)" className="sm:col-span-2" textColor={textColor} mutedColor={mutedColor}>
+                    <Input
+                      value={state.app.appStoreUrl}
+                      onChange={(e) => updateNested("app", "appStoreUrl", e.target.value)}
+                      placeholder="https://apps.apple.com/app/id..."
+                      className="h-10 rounded-xl"
+                      style={inputStyle}
+                    />
+                  </FieldGroup>
+                  <FieldGroup label="Google Play URL (Android)" className="sm:col-span-2" textColor={textColor} mutedColor={mutedColor}>
+                    <Input
+                      value={state.app.playStoreUrl}
+                      onChange={(e) => updateNested("app", "playStoreUrl", e.target.value)}
+                      placeholder="https://play.google.com/store/apps/details?id=..."
+                      className="h-10 rounded-xl"
+                      style={inputStyle}
+                    />
+                  </FieldGroup>
+                  <FieldGroup label="iOS rating (0–5)" textColor={textColor} mutedColor={mutedColor}>
+                    <Input
+                      type="number"
+                      step={0.1}
+                      min={0}
+                      max={5}
+                      value={state.app.iosRating}
+                      onChange={(e) => updateNested("app", "iosRating", Number(e.target.value))}
+                      className="h-10 rounded-xl"
+                      style={inputStyle}
+                    />
+                  </FieldGroup>
+                  <FieldGroup label="Android rating (0–5)" textColor={textColor} mutedColor={mutedColor}>
+                    <Input
+                      type="number"
+                      step={0.1}
+                      min={0}
+                      max={5}
+                      value={state.app.androidRating}
+                      onChange={(e) => updateNested("app", "androidRating", Number(e.target.value))}
+                      className="h-10 rounded-xl"
+                      style={inputStyle}
+                    />
+                  </FieldGroup>
+                  <FieldGroup label="Total downloads (display text)" textColor={textColor} mutedColor={mutedColor}>
+                    <Input
+                      value={state.app.downloads}
+                      onChange={(e) => updateNested("app", "downloads", e.target.value)}
+                      placeholder="e.g. 250k+"
+                      className="h-10 rounded-xl"
+                      style={inputStyle}
+                    />
+                  </FieldGroup>
+                  <FieldGroup label="Category / subtitle" textColor={textColor} mutedColor={mutedColor}>
+                    <Input
+                      value={state.app.category}
+                      onChange={(e) => updateNested("app", "category", e.target.value)}
+                      placeholder="Navigation · Outdoors"
+                      className="h-10 rounded-xl"
+                      style={inputStyle}
+                    />
+                  </FieldGroup>
+                  <FieldGroup label="Premium price ($) — optional" textColor={textColor} mutedColor={mutedColor}>
+                    <Input
+                      type="number"
+                      value={state.product.price}
+                      onChange={(e) => updateNested("product", "price", Number(e.target.value))}
+                      min={0}
+                      placeholder="0 to hide the Premium card"
+                      className="h-10 rounded-xl"
+                      style={inputStyle}
+                    />
+                  </FieldGroup>
+                  <FieldGroup label="Premium original price ($)" textColor={textColor} mutedColor={mutedColor}>
+                    <Input
+                      type="number"
+                      value={state.product.originalPrice}
+                      onChange={(e) => updateNested("product", "originalPrice", Number(e.target.value))}
+                      min={0}
+                      className="h-10 rounded-xl"
+                      style={inputStyle}
+                    />
+                  </FieldGroup>
+                </>
+              )}
+
+              {state.templateType !== "saas" && state.templateType !== "mobile-app" && (
                 <>
                   <FieldGroup label="Free download CTA label" textColor={textColor} mutedColor={mutedColor}>
                     <Input
@@ -840,6 +987,38 @@ export default function SetupPage() {
                     />
                   </div>
                 )}
+              </div>
+            </Section>
+
+            {/* ── Integrations ── */}
+            <Section label="Integrations" glassCard={glassCard}>
+              <p className="text-xs mb-4" style={{ color: subtleColor }}>
+                Pick your checkout and email providers. FREE ships with Stripe one-time
+                and a no-op email logger. Locked cards unlock in LaunchKit PRO.
+              </p>
+
+              <div className="space-y-5">
+                <ProviderPickerGroup
+                  label="Checkout"
+                  kind="checkout"
+                  value={state.integrations.checkoutProvider}
+                  onChange={(id) => updateNested("integrations", "checkoutProvider", id)}
+                  textColor={textColor}
+                  mutedColor={mutedColor}
+                  subtleColor={subtleColor}
+                  cardBorder={cardBorder}
+                />
+
+                <ProviderPickerGroup
+                  label="Email capture"
+                  kind="email"
+                  value={state.integrations.emailProvider}
+                  onChange={(id) => updateNested("integrations", "emailProvider", id)}
+                  textColor={textColor}
+                  mutedColor={mutedColor}
+                  subtleColor={subtleColor}
+                  cardBorder={cardBorder}
+                />
               </div>
             </Section>
 
@@ -1203,6 +1382,235 @@ function ImageUploadField({
         className="hidden"
         onChange={handleFile}
       />
+    </div>
+  );
+}
+
+// ─── Integrations picker ─────────────────────────────────────────────────────
+
+function ProviderPickerGroup({
+  label,
+  kind,
+  value,
+  onChange,
+  textColor,
+  mutedColor,
+  subtleColor,
+  cardBorder,
+}: {
+  label: string;
+  kind: IntegrationKind;
+  value: string;
+  onChange: (id: string) => void;
+  textColor: string;
+  mutedColor: string;
+  subtleColor: string;
+  cardBorder: string;
+}) {
+  const providers = listProviders(kind);
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <Label className="text-sm font-medium" style={{ color: mutedColor }}>
+          {label}
+        </Label>
+        <span className="text-[10px] uppercase tracking-wider" style={{ color: subtleColor }}>
+          {providers.filter((p) => p.edition === "free").length} free ·{" "}
+          {providers.filter((p) => p.edition === "pro").length} pro
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {providers.map((provider) => (
+          <ProviderCard
+            key={provider.id}
+            provider={provider}
+            selected={value === provider.id}
+            onSelect={() => {
+              if (provider.edition === "free") onChange(provider.id);
+            }}
+            textColor={textColor}
+            mutedColor={mutedColor}
+            subtleColor={subtleColor}
+            cardBorder={cardBorder}
+          />
+        ))}
+      </div>
+
+      {value && providers.find((p) => p.id === value)?.edition === "free" && (
+        <TestConnectionButton
+          kind={kind}
+          id={value}
+          mutedColor={mutedColor}
+          subtleColor={subtleColor}
+          cardBorder={cardBorder}
+        />
+      )}
+    </div>
+  );
+}
+
+function ProviderCard({
+  provider,
+  selected,
+  onSelect,
+  textColor,
+  mutedColor,
+  subtleColor,
+  cardBorder,
+}: {
+  provider: CatalogEntry;
+  selected: boolean;
+  onSelect: () => void;
+  textColor: string;
+  mutedColor: string;
+  subtleColor: string;
+  cardBorder: string;
+}) {
+  const locked = provider.edition === "pro";
+  const borderColor = selected ? "var(--brand-primary)" : cardBorder;
+  const background = selected
+    ? "color-mix(in srgb, var(--brand-primary) 10%, transparent)"
+    : "transparent";
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      disabled={locked}
+      aria-pressed={selected}
+      className="relative text-left rounded-xl px-3 py-2.5 transition-all disabled:cursor-not-allowed"
+      style={{
+        border: `1px solid ${borderColor}`,
+        background,
+        opacity: locked ? 0.55 : 1,
+      }}
+    >
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-semibold" style={{ color: textColor }}>
+          {provider.displayName}
+        </span>
+        {locked && (
+          <span
+            className="ml-auto text-[10px] uppercase tracking-wider font-bold flex items-center gap-1 px-1.5 py-0.5 rounded"
+            style={{
+              color: "var(--brand-primary)",
+              background: "color-mix(in srgb, var(--brand-primary) 15%, transparent)",
+            }}
+          >
+            <Lock className="w-2.5 h-2.5" />
+            PRO
+          </span>
+        )}
+        {selected && !locked && (
+          <Check
+            className="w-3.5 h-3.5 ml-auto"
+            style={{ color: "var(--brand-primary)" }}
+          />
+        )}
+      </div>
+      <p className="text-xs mt-1 leading-relaxed" style={{ color: subtleColor }}>
+        {provider.description}
+      </p>
+      {provider.requiredEnv.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {provider.requiredEnv.map((env) => (
+            <code
+              key={env}
+              className="text-[10px] px-1.5 py-0.5 rounded font-mono"
+              style={{ background: "rgba(120,120,140,0.12)", color: mutedColor }}
+            >
+              {env}
+            </code>
+          ))}
+        </div>
+      )}
+    </button>
+  );
+}
+
+function TestConnectionButton({
+  kind,
+  id,
+  mutedColor,
+  subtleColor,
+  cardBorder,
+}: {
+  kind: IntegrationKind;
+  id: string;
+  mutedColor: string;
+  subtleColor: string;
+  cardBorder: string;
+}) {
+  const [state, setLocalState] = useState<
+    | { status: "idle" }
+    | { status: "loading" }
+    | { status: "ok"; message?: string }
+    | { status: "error"; message: string; missingEnv?: string[] }
+  >({ status: "idle" });
+
+  const run = async () => {
+    setLocalState({ status: "loading" });
+    try {
+      const res = await fetch("/api/admin/test-integration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind, id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setLocalState({ status: "ok", message: data.message });
+      } else {
+        setLocalState({
+          status: "error",
+          message: data.error ?? data.message ?? "Connection failed.",
+          missingEnv: data.missingEnv,
+        });
+      }
+    } catch {
+      setLocalState({ status: "error", message: "Network error." });
+    }
+  };
+
+  return (
+    <div className="flex items-start gap-2 pt-1">
+      <button
+        type="button"
+        onClick={run}
+        disabled={state.status === "loading"}
+        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-colors hover:opacity-80 disabled:opacity-60"
+        style={{ background: "transparent", border: `1px solid ${cardBorder}`, color: mutedColor }}
+      >
+        {state.status === "loading" ? (
+          <Loader2 className="w-3 h-3 animate-spin" />
+        ) : state.status === "ok" ? (
+          <Wifi className="w-3 h-3" style={{ color: "#22c55e" }} />
+        ) : state.status === "error" ? (
+          <WifiOff className="w-3 h-3" style={{ color: "#ef4444" }} />
+        ) : (
+          <Wifi className="w-3 h-3" />
+        )}
+        Test connection
+      </button>
+      {state.status === "ok" && state.message && (
+        <span className="text-xs pt-1.5" style={{ color: subtleColor }}>
+          {state.message}
+        </span>
+      )}
+      {state.status === "error" && (
+        <span className="text-xs pt-1.5" style={{ color: "#ef4444" }}>
+          {state.message}
+          {state.missingEnv && state.missingEnv.length > 0 && (
+            <>
+              {" "}
+              <span style={{ color: subtleColor }}>
+                (missing: {state.missingEnv.join(", ")})
+              </span>
+            </>
+          )}
+        </span>
+      )}
     </div>
   );
 }

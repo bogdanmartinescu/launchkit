@@ -1,12 +1,12 @@
 {
+  "version": 2,
   "configured": true,
   "templateType": "email-collection",
-  "theme": "dark",
-  "heroVariant": "split",
+  "theme": "light",
   "brand": {
     "name": "LaunchKit",
-    "primaryColor": "#3b82f6",
-    "accentColor": "#06b6d4",
+    "primaryColor": "#10b981",
+    "accentColor": "#14b8a6",
     "logoUrl": "",
     "productImageUrl": ""
   },
@@ -76,6 +76,25 @@
   "integrations": {
     "stripePublishableKey": "",
     "stripePriceId": "price_placeholder",
-    "baseUrl": "http://localhost:3000"
+    "baseUrl": "http://localhost:3000",
+    "checkoutProvider": "stripe",
+    "emailProvider": "none"
+  },
+  "sections": {
+    "hero": {
+      "variant": "split"
+    }
+  },
+  "heroVariant": "centered",
+  "app": {
+    "appStoreUrl": "",
+    "playStoreUrl": "",
+    "iosRating": 4.8,
+    "androidRating": 4.7,
+    "iosReviewCount": 0,
+    "androidReviewCount": 0,
+    "downloads": "",
+    "category": "",
+    "appIconUrl": ""
   }
 }

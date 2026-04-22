@@ -12,7 +12,9 @@ const LogoPlaceholder = ({ name }: { name: string }) => (
 );
 
 export function TrustedBy() {
-  const logos = [...siteConfig.clients, ...siteConfig.clients];
+  const section = siteConfig.sections.trustedBy;
+  if (!section.enabled || section.logos.length === 0) return null;
+  const logos = [...section.logos, ...section.logos];
 
   return (
     <section className="py-16 border-y border-white/[0.06] relative overflow-hidden">
@@ -24,15 +26,21 @@ export function TrustedBy() {
           transition={{ duration: 0.5 }}
           className="text-center text-xs font-semibold tracking-widest text-slate-500 uppercase mb-10"
         >
-          As seen in &amp; read by founders at
+          {section.eyebrow}
         </motion.p>
       </div>
 
       {/* Marquee */}
       <div className="relative overflow-hidden">
-        {/* Left/right fade masks */}
-        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0a0f1e] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0a0f1e] to-transparent z-10 pointer-events-none" />
+        {/* Left/right fade masks — use page-bg token so they match both themes */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to right, var(--page-bg), transparent)" }}
+        />
+        <div
+          className="absolute right-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to left, var(--page-bg), transparent)" }}
+        />
 
         <div className="flex animate-marquee w-max">
           {logos.map((client, i) => (

@@ -6,15 +6,14 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/config";
 import Image from "next/image";
 
-const HIGHLIGHTS = [
-  { icon: Zap, text: "Ship 10× faster" },
-  { icon: Shield, text: "Enterprise-grade security" },
-  { icon: BarChart3, text: "Real-time analytics" },
-];
+const BULLET_ICONS = [Zap, Shield, BarChart3];
 
 export function SaasHeroSplit() {
   const { product } = siteConfig;
-  const productImage = siteConfig.brand.productImageUrl;
+  const section = siteConfig.sections.hero;
+  const productImage = section.image.url || siteConfig.brand.productImageUrl;
+
+  if (!section.enabled) return null;
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
@@ -39,76 +38,93 @@ export function SaasHeroSplit() {
             className="flex flex-col gap-8"
           >
             {/* Badge */}
-            <span
-              className="self-start inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase"
-              style={{
-                background: `color-mix(in srgb, var(--brand-primary, #6366f1) 12%, transparent)`,
-                border: `1px solid color-mix(in srgb, var(--brand-primary, #6366f1) 22%, transparent)`,
-                color: `var(--brand-primary, #6366f1)`,
-              }}
-            >
-              {product.badge}
-            </span>
+            {section.eyebrow && (
+              <span
+                className="self-start inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase"
+                style={{
+                  background: `color-mix(in srgb, var(--brand-primary, #6366f1) 12%, transparent)`,
+                  border: `1px solid color-mix(in srgb, var(--brand-primary, #6366f1) 22%, transparent)`,
+                  color: `var(--brand-primary, #6366f1)`,
+                }}
+              >
+                {section.eyebrow}
+              </span>
+            )}
 
             <div>
               <h1
                 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight mb-5"
                 style={{ color: "var(--page-text)" }}
               >
-                {product.name}
-                <span className="block gradient-text">{product.tagline}</span>
+                {section.headline}
+                {section.headlineAccent && (
+                  <span className="block gradient-text">{section.headlineAccent}</span>
+                )}
               </h1>
-              <p className="text-lg lg:text-xl leading-relaxed" style={{ color: "var(--page-text-muted)" }}>
-                {product.description}
-              </p>
+              {section.description && (
+                <p className="text-lg lg:text-xl leading-relaxed" style={{ color: "var(--page-text-muted)" }}>
+                  {section.description}
+                </p>
+              )}
             </div>
 
             {/* Highlight bullets */}
-            <ul className="flex flex-col gap-3">
-              {HIGHLIGHTS.map(({ icon: Icon, text }) => (
-                <li key={text} className="flex items-center gap-3">
-                  <span
-                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: `color-mix(in srgb, var(--brand-primary, #6366f1) 15%, transparent)` }}
-                  >
-                    <Icon className="w-4 h-4" style={{ color: "var(--brand-primary, #6366f1)" }} />
-                  </span>
-                  <span className="text-sm font-medium" style={{ color: "var(--page-text)" }}>
-                    {text}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {section.bullets.length > 0 && (
+              <ul className="flex flex-col gap-3">
+                {section.bullets.map((text, i) => {
+                  const Icon = BULLET_ICONS[i % BULLET_ICONS.length];
+                  return (
+                    <li key={text} className="flex items-center gap-3">
+                      <span
+                        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: `color-mix(in srgb, var(--brand-primary, #6366f1) 15%, transparent)` }}
+                      >
+                        <Icon className="w-4 h-4" style={{ color: "var(--brand-primary, #6366f1)" }} />
+                      </span>
+                      <span className="text-sm font-medium" style={{ color: "var(--page-text)" }}>
+                        {text}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                size="lg"
-                className="h-13 px-8 rounded-xl text-white font-bold text-base shadow-xl border-0 hover:opacity-90 hover:scale-[1.02] transition-all"
-                style={{
-                  background: `linear-gradient(135deg, var(--brand-primary, #6366f1), var(--brand-accent, #8b5cf6))`,
-                  boxShadow: `0 8px 28px color-mix(in srgb, var(--brand-primary, #6366f1) 30%, transparent)`,
-                }}
-              >
-                Start Free Trial
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="lg"
-                className="h-13 px-7 rounded-xl font-semibold gap-2 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
-                style={{ color: "var(--page-text-muted)" }}
-              >
-                <PlayCircle className="w-5 h-5" />
-                Watch demo
-              </Button>
+              {section.ctaPrimary.label && (
+                <Button
+                  size="lg"
+                  className="h-13 px-8 rounded-xl text-white font-bold text-base shadow-xl border-0 hover:opacity-90 hover:scale-[1.02] transition-all"
+                  style={{
+                    background: `linear-gradient(135deg, var(--brand-primary, #6366f1), var(--brand-accent, #8b5cf6))`,
+                    boxShadow: `0 8px 28px color-mix(in srgb, var(--brand-primary, #6366f1) 30%, transparent)`,
+                  }}
+                >
+                  {section.ctaPrimary.label}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+              {section.ctaSecondary.label && (
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="h-13 px-7 rounded-xl font-semibold gap-2 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
+                  style={{ color: "var(--page-text-muted)" }}
+                >
+                  <PlayCircle className="w-5 h-5" />
+                  {section.ctaSecondary.label}
+                </Button>
+              )}
             </div>
 
             {/* Trust */}
-            <p className="text-xs flex items-center gap-2" style={{ color: "var(--page-text-subtle)" }}>
-              <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
-              No credit card required · Free for 14 days · Cancel anytime
-            </p>
+            {section.trustLine && (
+              <p className="text-xs flex items-center gap-2" style={{ color: "var(--page-text-subtle)" }}>
+                <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                {section.trustLine}
+              </p>
+            )}
           </motion.div>
 
           {/* Right: App screenshot */}
@@ -133,7 +149,7 @@ export function SaasHeroSplit() {
               {productImage ? (
                 <Image
                   src={productImage}
-                  alt={`${product.name} screenshot`}
+                  alt={section.image.alt || `${product.name} screenshot`}
                   width={720}
                   height={480}
                   className="w-full h-auto"

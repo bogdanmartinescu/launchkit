@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/config";
 
 export function SaasPricing() {
-  const { pricingTiers, pricing } = siteConfig;
+  const { pricingTiers } = siteConfig;
+  const section = siteConfig.sections.pricing;
 
   const handleTierClick = async (tier: (typeof pricingTiers)[number]) => {
     if (!tier.stripePriceId) {
@@ -25,6 +26,8 @@ export function SaasPricing() {
       alert("Checkout unavailable. Please try again.");
     }
   };
+
+  if (!section.enabled) return null;
 
   return (
     <section id="pricing" className="py-24 lg:py-32 relative">
@@ -45,22 +48,30 @@ export function SaasPricing() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span
-            className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase mb-4"
-            style={{
-              background: `color-mix(in srgb, var(--brand-primary) 15%, transparent)`,
-              border: `1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
-              color: `var(--brand-primary)`,
-            }}
-          >
-            Simple, transparent pricing
-          </span>
+          {section.eyebrow && (
+            <span
+              className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase mb-4"
+              style={{
+                background: `color-mix(in srgb, var(--brand-primary) 15%, transparent)`,
+                border: `1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
+                color: `var(--brand-primary)`,
+              }}
+            >
+              {section.eyebrow}
+            </span>
+          )}
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-            Choose your <span className="gradient-text">growth plan</span>
+            {section.heading}
+            {section.headingAccent && (
+              <>
+                {" "}
+                <span className="gradient-text">{section.headingAccent}</span>
+              </>
+            )}
           </h2>
-          <p className="text-slate-400 text-lg">
-            Start free. Scale when you&apos;re ready. No hidden fees.
-          </p>
+          {section.subheading && (
+            <p className="text-slate-400 text-lg">{section.subheading}</p>
+          )}
         </motion.div>
 
         {/* Tier cards */}
@@ -81,7 +92,7 @@ export function SaasPricing() {
                 tier.isPopular
                   ? {
                       border: `2px solid color-mix(in srgb, var(--brand-primary) 50%, transparent)`,
-                      background: `color-mix(in srgb, var(--brand-primary) 8%, #111827)`,
+                      background: `color-mix(in srgb, var(--brand-primary) 8%, var(--page-bg-card))`,
                       boxShadow: `0 25px 60px color-mix(in srgb, var(--brand-primary) 20%, transparent)`,
                     }
                   : {}
@@ -97,7 +108,7 @@ export function SaasPricing() {
                     }}
                   >
                     <Zap className="w-3 h-3 fill-white" />
-                    Most Popular
+                    {section.badge || "Most Popular"}
                   </span>
                 </div>
               )}
@@ -154,7 +165,7 @@ export function SaasPricing() {
         </div>
 
         {/* Guarantee */}
-        {pricing.guarantee && (
+        {section.guarantee && (
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -163,7 +174,7 @@ export function SaasPricing() {
             className="flex items-center justify-center gap-2 mt-10 text-slate-500 text-sm"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            {pricing.guarantee}
+            {section.guarantee}
           </motion.div>
         )}
 
@@ -175,7 +186,7 @@ export function SaasPricing() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-16 max-w-3xl mx-auto"
         >
-          {siteConfig.stats.map((stat) => (
+          {section.stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <p className="font-heading font-extrabold text-white text-2xl gradient-text">
                 {stat.value}

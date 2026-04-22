@@ -7,11 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { siteConfig } from "@/lib/config";
 
-const STATS = [
-  { icon: Users, value: "24,000+", label: "subscribers" },
-  { icon: Mail, value: "96%", label: "open rate" },
-  { icon: Shield, value: "Free", label: "forever" },
-];
+const STAT_ICONS = [Users, Mail, Shield];
 
 export function EmailHeroBold() {
   const [email, setEmail] = useState("");
@@ -34,7 +30,11 @@ export function EmailHeroBold() {
     }
   };
 
-  const { product, leadMagnet } = siteConfig;
+  const { leadMagnet } = siteConfig;
+  const section = siteConfig.sections.hero;
+  const stats = siteConfig.sections.pricing.stats;
+
+  if (!section.enabled) return null;
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
@@ -87,22 +87,26 @@ export function EmailHeroBold() {
           className="font-heading text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.06] tracking-tight mb-6"
           style={{ color: "var(--page-text)" }}
         >
-          {product.name}
-          <span className="block gradient-text mt-2 text-4xl sm:text-5xl lg:text-6xl">
-            {product.tagline}
-          </span>
+          {section.headline}
+          {section.headlineAccent && (
+            <span className="block gradient-text mt-2 text-4xl sm:text-5xl lg:text-6xl">
+              {section.headlineAccent}
+            </span>
+          )}
         </motion.h1>
 
         {/* Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.18 }}
-          className="text-lg lg:text-xl leading-relaxed max-w-xl mx-auto mb-10"
-          style={{ color: "var(--page-text-muted)" }}
-        >
-          {product.description}
-        </motion.p>
+        {section.description && (
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.18 }}
+            className="text-lg lg:text-xl leading-relaxed max-w-xl mx-auto mb-10"
+            style={{ color: "var(--page-text-muted)" }}
+          >
+            {section.description}
+          </motion.p>
+        )}
 
         {/* Prominent email form */}
         <motion.div
@@ -158,7 +162,7 @@ export function EmailHeroBold() {
               >
                 {loading ? "Joining…" : (
                   <>
-                    {leadMagnet.title || "Subscribe Free"}
+                    {section.ctaPrimary.label || leadMagnet.title || "Subscribe Free"}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </>
                 )}
@@ -166,35 +170,42 @@ export function EmailHeroBold() {
             </form>
           )}
 
-          <p className="text-xs mt-4" style={{ color: "var(--page-text-subtle)" }}>
-            No spam, ever. Unsubscribe with one click.
-          </p>
+          {section.trustLine && (
+            <p className="text-xs mt-4" style={{ color: "var(--page-text-subtle)" }}>
+              {section.trustLine}
+            </p>
+          )}
         </motion.div>
 
         {/* Stats row */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.36 }}
-          className="flex flex-wrap items-center justify-center gap-10 mt-16"
-        >
-          {STATS.map(({ icon: Icon, value, label }) => (
-            <div key={label} className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: `color-mix(in srgb, var(--brand-primary, #6366f1) 12%, transparent)` }}
-              >
-                <Icon className="w-5 h-5" style={{ color: "var(--brand-primary, #6366f1)" }} />
-              </div>
-              <div className="text-left">
-                <p className="font-heading text-lg font-bold leading-none mb-0.5" style={{ color: "var(--page-text)" }}>
-                  {value}
-                </p>
-                <p className="text-xs" style={{ color: "var(--page-text-muted)" }}>{label}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
+        {stats.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.36 }}
+            className="flex flex-wrap items-center justify-center gap-10 mt-16"
+          >
+            {stats.map((stat, i) => {
+              const Icon = STAT_ICONS[i % STAT_ICONS.length];
+              return (
+                <div key={stat.label} className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: `color-mix(in srgb, var(--brand-primary, #6366f1) 12%, transparent)` }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: "var(--brand-primary, #6366f1)" }} />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-heading text-lg font-bold leading-none mb-0.5" style={{ color: "var(--page-text)" }}>
+                      {stat.value}
+                    </p>
+                    <p className="text-xs" style={{ color: "var(--page-text-muted)" }}>{stat.label}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </motion.div>
+        )}
       </div>
     </section>
   );

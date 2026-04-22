@@ -52,7 +52,10 @@ export function EbookHeroCentered() {
   };
 
   const { product, leadMagnet } = siteConfig;
-  const productImage = siteConfig.brand.productImageUrl;
+  const section = siteConfig.sections.hero;
+  const productImage = section.image.url || siteConfig.brand.productImageUrl;
+
+  if (!section.enabled) return null;
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -64,25 +67,26 @@ export function EbookHeroCentered() {
       <div className="dot-grid absolute inset-0" />
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex justify-center mb-6"
-        >
-          <span
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase"
-            style={{
-              background: `color-mix(in srgb, var(--brand-primary, #6366f1) 15%, transparent)`,
-              border: `1px solid color-mix(in srgb, var(--brand-primary, #6366f1) 25%, transparent)`,
-              color: `var(--brand-primary, #6366f1)`,
-            }}
+        {section.eyebrow && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-center mb-6"
           >
-            <Star className="w-3 h-3 fill-current" />
-            {product.badge}
-          </span>
-        </motion.div>
+            <span
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase"
+              style={{
+                background: `color-mix(in srgb, var(--brand-primary, #6366f1) 15%, transparent)`,
+                border: `1px solid color-mix(in srgb, var(--brand-primary, #6366f1) 25%, transparent)`,
+                color: `var(--brand-primary, #6366f1)`,
+              }}
+            >
+              <Star className="w-3 h-3 fill-current" />
+              {section.eyebrow}
+            </span>
+          </motion.div>
+        )}
 
         {/* Headline */}
         <motion.h1
@@ -92,20 +96,23 @@ export function EbookHeroCentered() {
           className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.08] tracking-tight mb-6"
           style={{ color: "var(--page-text)" }}
         >
-          {product.name}
-          <span className="block gradient-text mt-1">{product.tagline}</span>
+          {section.headline}
+          {section.headlineAccent && (
+            <span className="block gradient-text mt-1">{section.headlineAccent}</span>
+          )}
         </motion.h1>
 
-        {/* Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.16 }}
-          className="text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto mb-10"
-          style={{ color: "var(--page-text-muted)" }}
-        >
-          {product.description}
-        </motion.p>
+        {section.description && (
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.16 }}
+            className="text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto mb-10"
+            style={{ color: "var(--page-text-muted)" }}
+          >
+            {section.description}
+          </motion.p>
+        )}
 
         {/* CTA Buttons */}
         <motion.div
@@ -114,28 +121,32 @@ export function EbookHeroCentered() {
           transition={{ duration: 0.6, delay: 0.24 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
         >
-          <Button
-            onClick={handleBuyNow}
-            size="lg"
-            className="h-13 px-8 rounded-xl text-white font-bold text-base shadow-xl border-0 transition-all duration-200 hover:opacity-90 hover:scale-[1.02]"
-            style={{
-              background: `linear-gradient(135deg, var(--brand-primary, #6366f1), var(--brand-accent, #8b5cf6))`,
-              boxShadow: `0 8px 32px color-mix(in srgb, var(--brand-primary, #6366f1) 35%, transparent)`,
-            }}
-          >
-            Get Instant Access — ${product.price}
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => setDialogOpen(true)}
-            className="h-13 px-8 rounded-xl font-semibold text-base border-page hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all"
-            style={{ color: "var(--page-text)" }}
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Free Sample Chapter
-          </Button>
+          {section.ctaPrimary.label && (
+            <Button
+              onClick={handleBuyNow}
+              size="lg"
+              className="h-13 px-8 rounded-xl text-white font-bold text-base shadow-xl border-0 transition-all duration-200 hover:opacity-90 hover:scale-[1.02]"
+              style={{
+                background: `linear-gradient(135deg, var(--brand-primary, #6366f1), var(--brand-accent, #8b5cf6))`,
+                boxShadow: `0 8px 32px color-mix(in srgb, var(--brand-primary, #6366f1) 35%, transparent)`,
+              }}
+            >
+              {section.ctaPrimary.label}
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          )}
+          {section.ctaSecondary.label && (
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setDialogOpen(true)}
+              className="h-13 px-8 rounded-xl font-semibold text-base border-page hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all"
+              style={{ color: "var(--page-text)" }}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {section.ctaSecondary.label}
+            </Button>
+          )}
         </motion.div>
 
         {/* Social proof */}
@@ -174,7 +185,7 @@ export function EbookHeroCentered() {
           {productImage ? (
             <Image
               src={productImage}
-              alt={product.name}
+              alt={section.image.alt || product.name}
               width={400}
               height={520}
               className="w-full rounded-2xl shadow-2xl"

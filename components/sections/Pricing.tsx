@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/config";
 
 export function Pricing() {
-  const { product, pricing } = siteConfig;
+  const { product } = siteConfig;
+  const section = siteConfig.sections.pricing;
 
   const handleBuyNow = async () => {
     try {
@@ -22,13 +23,18 @@ export function Pricing() {
     }
   };
 
+  if (!section.enabled) return null;
+
   return (
     <section id="pricing" className="py-24 lg:py-32 relative">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-px bg-gradient-to-r from-transparent via-[var(--brand-primary)]/30 to-transparent" />
 
       {/* Background glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[600px] h-[400px] bg-indigo-600/10 rounded-full blur-3xl" />
+        <div
+          className="w-[600px] h-[400px] rounded-full blur-3xl"
+          style={{ background: `color-mix(in srgb, var(--brand-primary) 10%, transparent)` }}
+        />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,16 +46,23 @@ export function Pricing() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span className="inline-block px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-wide uppercase mb-4">
-            Simple, transparent pricing
-          </span>
+          {section.eyebrow && (
+            <span className="inline-block px-3 py-1.5 rounded-full bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20 text-[var(--brand-primary)] text-xs font-semibold tracking-wide uppercase mb-4">
+              {section.eyebrow}
+            </span>
+          )}
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-            One Price.{" "}
-            <span className="gradient-text">Everything Included.</span>
+            {section.heading}
+            {section.headingAccent && (
+              <>
+                {" "}
+                <span className="gradient-text">{section.headingAccent}</span>
+              </>
+            )}
           </h2>
-          <p className="text-slate-400 text-lg">
-            No subscriptions. No upsells. Pay once and own it forever.
-          </p>
+          {section.subheading && (
+            <p className="text-slate-400 text-lg">{section.subheading}</p>
+          )}
         </motion.div>
 
         {/* Pricing card */}
@@ -62,15 +75,22 @@ export function Pricing() {
         >
           <div className="relative glass rounded-3xl p-8 lg:p-10 overflow-hidden gradient-border">
             {/* Glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/8 to-violet-500/8 rounded-3xl pointer-events-none" />
+            <div
+              className="absolute inset-0 rounded-3xl pointer-events-none"
+              style={{
+                background: `linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 8%, transparent), color-mix(in srgb, var(--brand-accent) 8%, transparent))`,
+              }}
+            />
 
             {/* Popular badge */}
-            <div className="absolute top-6 right-6">
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/25 text-amber-400 text-xs font-bold">
-                <Zap className="w-3 h-3 fill-amber-400" />
-                Best Value
-              </span>
-            </div>
+            {section.badge && (
+              <div className="absolute top-6 right-6">
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/25 text-amber-400 text-xs font-bold">
+                  <Zap className="w-3 h-3 fill-amber-400" />
+                  {section.badge}
+                </span>
+              </div>
+            )}
 
             <div className="relative z-10">
               {/* Product name */}
@@ -99,32 +119,40 @@ export function Pricing() {
               <Button
                 onClick={handleBuyNow}
                 size="lg"
-                className="group w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold text-lg py-4 rounded-xl shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-200 border-0 h-auto mb-4"
+                className="group w-full text-white font-bold text-lg py-4 rounded-xl shadow-xl transition-all duration-200 border-0 h-auto mb-4 hover:opacity-95"
+                style={{
+                  background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
+                  boxShadow: `0 16px 40px color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
+                }}
               >
-                {pricing.ctaLabel}
+                {section.ctaLabel}
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
 
               {/* Guarantee */}
-              <div className="flex items-center justify-center gap-2 text-slate-400 text-sm mb-8">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                {pricing.guarantee}
-              </div>
+              {section.guarantee && (
+                <div className="flex items-center justify-center gap-2 text-slate-400 text-sm mb-8">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  {section.guarantee}
+                </div>
+              )}
 
               {/* Divider */}
-              <div className="border-t border-white/[0.06] pt-8">
-                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-4">
-                  Everything included
-                </p>
-                <ul className="space-y-3">
-                  {pricing.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-3 text-slate-300 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {section.features.length > 0 && (
+                <div className="border-t border-white/[0.06] pt-8">
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-4">
+                    {section.includedLabel}
+                  </p>
+                  <ul className="space-y-3">
+                    {section.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-3 text-slate-300 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>
@@ -137,7 +165,7 @@ export function Pricing() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-16 max-w-3xl mx-auto"
         >
-          {siteConfig.stats.map((stat) => (
+          {section.stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <p className="font-heading font-extrabold text-white text-2xl lg:text-3xl gradient-text">
                 {stat.value}

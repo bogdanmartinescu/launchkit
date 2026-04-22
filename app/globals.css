@@ -151,12 +151,131 @@ html.light {
     font-family: var(--font-sora), var(--font-inter), sans-serif;
     color: var(--page-text);
   }
-  /* Light mode: override hardcoded text-white on prose, not buttons */
-  html.light p.text-white,
-  html.light span.text-white:not([class*="bg-"]):not(button span) {
-    color: var(--page-text);
-  }
 }
+
+/* ─── Light-theme safety net ───────────────────────────────────────────────
+ * Many components pre-date the multi-theme work and still use hardcoded
+ * dark-theme Tailwind utilities (`text-white`, `text-slate-*`,
+ * `bg-white/[0.04]`, `border-white/10`, etc.). On a light page those become
+ * white-on-white text, invisible glass surfaces, and black panels floating on
+ * a light page. The rules below remap those utilities when `html.light` is
+ * active so every component stays legible in both themes without touching
+ * its source.
+ *
+ * `!important` is used because Tailwind v4 emits `.text-white` inside
+ * `@layer utilities` and custom CSS-Zapper plugins sometimes hoist layer
+ * order in ways that can out-rank a plain unlayered override. `!important`
+ * removes any cascade ambiguity and guarantees the light theme wins.
+ *
+ * Decorative cards that must remain dark in both themes (e.g. the Hero book
+ * cover) or CTAs that must stay white opt out by setting
+ * `style={{ color: "#fff" }}` inline — inline styles beat `!important`
+ * declarations from class selectors.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* Text: pull hardcoded white prose back to the theme's page-text token.
+ * Explicit tag list (instead of `:is()`) keeps the rule robust across
+ * framer-motion wrappers and avoids Tailwind v4's new layer ordering.
+ * Buttons without a gradient class are intentionally included — any true
+ * gradient CTA should keep white text via inline `style={{ color: "#fff" }}`
+ * or by using `bg-gradient-…`/`from-…` classes which we exclude below. */
+html.light h1.text-white,
+html.light h2.text-white,
+html.light h3.text-white,
+html.light h4.text-white,
+html.light h5.text-white,
+html.light h6.text-white,
+html.light p.text-white,
+html.light li.text-white,
+html.light blockquote.text-white,
+html.light dt.text-white,
+html.light dd.text-white,
+html.light figcaption.text-white,
+html.light div.text-white,
+html.light strong.text-white,
+html.light em.text-white,
+html.light small.text-white,
+html.light a.text-white:not([class*="bg-gradient"]):not([class*="from-"]):not([style*="gradient"]),
+html.light span.text-white:not([class*="bg-gradient"]):not([class*="from-"]):not([style*="gradient"]),
+html.light label.text-white,
+html.light input.text-white,
+html.light textarea.text-white,
+html.light select.text-white,
+html.light button.text-white:not([class*="bg-gradient"]):not([class*="from-"]):not([style*="gradient"]):not([style*="brand-primary"]) {
+  color: var(--page-text) !important;
+}
+
+/* Slate text ramp → theme tokens. Keeps hierarchy in both modes. */
+html.light .text-slate-200,
+html.light .text-slate-300 { color: var(--page-text) !important; }
+html.light .text-slate-400 { color: var(--page-text-muted) !important; }
+html.light .text-slate-500,
+html.light .text-slate-600 { color: var(--page-text-subtle) !important; }
+
+/* Hover lifts that end on "white" should end on page-text instead. */
+html.light .hover\:text-white:hover { color: var(--page-text) !important; }
+html.light .group:hover .group-hover\:text-white,
+html.light .group-hover\:text-white:is(:where(.group):hover *) {
+  color: var(--page-text) !important;
+}
+
+/* Glass surface tints: white alpha overlays disappear on light bg.
+ * Swap to subtle dark alpha so cards/pills/inputs stay visible. */
+html.light .bg-white\/\[0\.02\] { background-color: rgba(15, 23, 42, 0.025); }
+html.light .bg-white\/\[0\.04\] { background-color: rgba(15, 23, 42, 0.035); }
+html.light .bg-white\/\[0\.05\] { background-color: rgba(15, 23, 42, 0.045); }
+html.light .bg-white\/\[0\.06\] { background-color: rgba(15, 23, 42, 0.055); }
+html.light .bg-white\/\[0\.08\] { background-color: rgba(15, 23, 42, 0.07); }
+html.light .bg-white\/\[0\.1\],
+html.light .bg-white\/10 { background-color: rgba(15, 23, 42, 0.09); }
+html.light .bg-white\/5 { background-color: rgba(15, 23, 42, 0.04); }
+
+/* Hover states on the same white overlays. */
+html.light .hover\:bg-white\/\[0\.02\]:hover { background-color: rgba(15, 23, 42, 0.035); }
+html.light .hover\:bg-white\/\[0\.04\]:hover { background-color: rgba(15, 23, 42, 0.045); }
+html.light .hover\:bg-white\/\[0\.05\]:hover { background-color: rgba(15, 23, 42, 0.055); }
+html.light .hover\:bg-white\/\[0\.06\]:hover { background-color: rgba(15, 23, 42, 0.07); }
+html.light .hover\:bg-white\/\[0\.08\]:hover { background-color: rgba(15, 23, 42, 0.08); }
+html.light .hover\:bg-white\/\[0\.1\]:hover { background-color: rgba(15, 23, 42, 0.1); }
+
+/* Borders: white alpha edges → subtle dark alpha in light mode. */
+html.light .border-white\/\[0\.04\] { border-color: rgba(15, 23, 42, 0.05); }
+html.light .border-white\/\[0\.06\] { border-color: rgba(15, 23, 42, 0.07); }
+html.light .border-white\/\[0\.08\] { border-color: rgba(15, 23, 42, 0.09); }
+html.light .border-white\/5 { border-color: rgba(15, 23, 42, 0.06); }
+html.light .border-white\/10 { border-color: rgba(15, 23, 42, 0.09); }
+html.light .border-white\/20 { border-color: rgba(15, 23, 42, 0.14); }
+html.light .hover\:border-white\/20:hover { border-color: rgba(15, 23, 42, 0.16); }
+
+/* Top/bottom rule overrides (border-t / border-b variants). */
+html.light .border-t.border-white\/\[0\.04\] { border-top-color: rgba(15, 23, 42, 0.05); }
+html.light .border-t.border-white\/\[0\.06\] { border-top-color: rgba(15, 23, 42, 0.07); }
+html.light .border-t.border-white\/10         { border-top-color: rgba(15, 23, 42, 0.09); }
+html.light .border-b.border-white\/\[0\.06\] { border-bottom-color: rgba(15, 23, 42, 0.07); }
+html.light .border-y.border-white\/\[0\.06\] {
+  border-top-color: rgba(15, 23, 42, 0.07);
+  border-bottom-color: rgba(15, 23, 42, 0.07);
+}
+
+/* Input placeholders: dark-theme components lean on placeholder:text-slate-500
+ * which is still readable on light, but lift it to the theme's subtle token
+ * for consistency with the rest of the page. */
+html.light .placeholder\:text-slate-500::placeholder { color: var(--page-text-subtle); }
+html.light .placeholder\:text-slate-400::placeholder { color: var(--page-text-muted); }
+
+/* Hardcoded dark hex backgrounds in decorative gradients / dialog panels. */
+html.light .bg-\[\#0a0f1e\],
+html.light .bg-\[\#0a0f1e\]\/95 { background-color: var(--page-bg); }
+html.light .bg-\[\#111827\] { background-color: var(--page-bg-card); }
+html.light .bg-\[\#0d1221\]\/95 {
+  background-color: color-mix(in srgb, var(--page-bg-card) 95%, transparent);
+}
+
+/* Heavy black shadows are invisible (or ugly) on a light page. */
+html.light .shadow-black\/10,
+html.light .shadow-black\/20 { box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06); }
+html.light .shadow-black\/50,
+html.light .shadow-black\/60 { box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1); }
 
 @layer utilities {
   /* Brand gradient text — responds to brand color changes */

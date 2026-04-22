@@ -30,10 +30,15 @@ export function Newsletter() {
 
   return (
     <section className="py-24 lg:py-32 relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-px bg-gradient-to-r from-transparent via-[var(--brand-primary)]/30 to-transparent" />
 
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-transparent to-violet-900/20" />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 10%, transparent), transparent 55%, color-mix(in srgb, var(--brand-accent) 10%, transparent))`,
+        }}
+      />
       <div className="absolute inset-0 dot-grid opacity-30" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,11 +50,17 @@ export function Newsletter() {
           className="max-w-2xl mx-auto text-center"
         >
           {/* Icon */}
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-indigo-500/30">
-            <Mail className="w-7 h-7 text-white" />
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl"
+            style={{
+              background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
+              boxShadow: `0 12px 32px color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
+            }}
+          >
+            <Mail className="w-7 h-7" style={{ color: "#fff" }} />
           </div>
 
-          <span className="inline-block px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-wide uppercase mb-4">
+          <span className="inline-block px-3 py-1.5 rounded-full bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20 text-[var(--brand-primary)] text-xs font-semibold tracking-wide uppercase mb-4">
             Stay in the loop
           </span>
 
@@ -80,12 +91,16 @@ export function Newsletter() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="flex-1 bg-white/[0.05] border-white/10 text-white placeholder:text-slate-500 focus:border-indigo-500 rounded-xl h-12 text-base"
+                className="flex-1 bg-white/[0.05] border-white/10 text-white placeholder:text-slate-500 focus:border-[var(--brand-primary)] rounded-xl h-12 text-base"
               />
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold px-6 rounded-xl h-12 border-0 shadow-lg shadow-indigo-500/25 transition-all whitespace-nowrap"
+                className="text-white font-bold px-6 rounded-xl h-12 border-0 shadow-lg transition-all hover:opacity-90 whitespace-nowrap"
+                style={{
+                  background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
+                  boxShadow: `0 8px 24px color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
+                }}
               >
                 {loading ? "Subscribing…" : "Subscribe"}
                 {!loading && <ArrowRight className="w-4 h-4 ml-1.5" />}

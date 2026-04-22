@@ -1,35 +1,61 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { SiteConfigSchema } from "@/lib/schema";
 
 const CONFIG_PATH = path.join(process.cwd(), "lib", "site.config.json");
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = (await req.json()) as Record<string, unknown>;
 
-    // Read existing config so we never lose fields not managed by the wizard
     let existing: Record<string, unknown> = {};
     try {
-      existing = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
+      existing = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8")) as Record<
+        string,
+        unknown
+      >;
     } catch {
-      // File might not exist yet — start fresh
+      // File might not exist yet — start fresh.
     }
 
-    // Deep-merge wizard payload on top of existing config
     const merged = deepMerge(existing, body);
     merged.configured = true;
+    if (merged.version === undefined) merged.version = 2;
 
+    const parsed = SiteConfigSchema.safeParse(merged);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Config failed validation",
+          issues: parsed.error.issues.map((i) => ({
+            path: i.path.join("."),
+            code: i.code,
+            message: i.message,
+          })),
+        },
+        { status: 400 }
+      );
+    }
+
+    // Persist the merged raw shape (not the fully-resolved/defaulted one) so
+    // that site.config.json stays minimal and user-authored, not bloated with
+    // every default value from the schema.
     try {
       fs.writeFileSync(CONFIG_PATH, JSON.stringify(merged, null, 2), "utf8");
-      return NextResponse.json({ success: true, message: "Config saved. Restart your dev server (or redeploy) to apply content changes. Colors update on next page load." });
+      return NextResponse.json({
+        success: true,
+        message:
+          "Config saved. Restart your dev server (or redeploy) to apply content changes. Colors update on next page load.",
+      });
     } catch {
-      // Filesystem is read-only (e.g. Vercel production)
       return NextResponse.json({
         success: false,
         readOnly: true,
         config: merged,
-        message: "Filesystem is read-only. Download the config below and commit it as lib/site.config.json.",
+        message:
+          "Filesystem is read-only. Download the config below and commit it as lib/site.config.json.",
       });
     }
   } catch (err) {

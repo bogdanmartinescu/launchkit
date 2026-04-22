@@ -15,8 +15,14 @@ export default function CancelPage() {
       <div className="relative z-10 max-w-md w-full text-center space-y-8">
         {/* Logo */}
         <Link href="/" className="inline-flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-            <BookOpen className="w-4 h-4 text-white" />
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg"
+            style={{
+              background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
+              boxShadow: `0 6px 16px color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
+            }}
+          >
+            <BookOpen className="w-4 h-4" style={{ color: "#fff" }} />
           </div>
           <span className="font-heading font-bold text-white text-lg">{siteConfig.brand.name}</span>
         </Link>
@@ -38,7 +44,13 @@ export default function CancelPage() {
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/#pricing">
-            <Button className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold rounded-xl border-0 shadow-lg shadow-indigo-500/25 w-full sm:w-auto">
+            <Button
+              className="text-white font-bold rounded-xl border-0 shadow-lg w-full sm:w-auto hover:opacity-95"
+              style={{
+                background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
+                boxShadow: `0 10px 24px color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
+              }}
+            >
               Try again
             </Button>
           </Link>

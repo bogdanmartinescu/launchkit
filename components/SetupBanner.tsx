@@ -11,13 +11,21 @@ export function SetupBanner() {
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-lg px-4">
-      <div className="relative flex items-center gap-4 rounded-2xl border border-indigo-500/40 bg-[#0d1221]/95 backdrop-blur-xl px-4 py-3.5 shadow-2xl shadow-black/60">
+      <div className="relative flex items-center gap-4 rounded-2xl border border-[var(--brand-primary)]/40 bg-[#0d1221]/95 backdrop-blur-xl px-4 py-3.5 shadow-2xl shadow-black/60">
         {/* Left glow accent */}
-        <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl bg-gradient-to-b from-indigo-500 to-violet-600" />
+        <div
+          className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
+          style={{ background: `linear-gradient(to bottom, var(--brand-primary), var(--brand-accent))` }}
+        />
 
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500/20 to-violet-600/20 border border-indigo-500/30 flex items-center justify-center flex-shrink-0 ml-1">
+        <div
+          className="w-8 h-8 rounded-xl border border-[var(--brand-primary)]/30 flex items-center justify-center flex-shrink-0 ml-1"
+          style={{
+            background: `linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 20%, transparent), color-mix(in srgb, var(--brand-accent) 20%, transparent))`,
+          }}
+        >
           <Settings
-            className="w-4 h-4 text-indigo-400"
+            className="w-4 h-4 text-[var(--brand-primary)]"
             style={{ animation: "spin 4s linear infinite" }}
           />
         </div>
@@ -33,7 +41,11 @@ export function SetupBanner() {
 
         <Link
           href="/setup"
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white text-xs font-bold transition-all shadow-lg shadow-indigo-500/30 whitespace-nowrap flex-shrink-0"
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white text-xs font-bold transition-all shadow-lg whitespace-nowrap flex-shrink-0 hover:opacity-95"
+          style={{
+            background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
+            boxShadow: `0 8px 20px color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
+          }}
         >
           Configure
           <ArrowRight className="w-3 h-3" />

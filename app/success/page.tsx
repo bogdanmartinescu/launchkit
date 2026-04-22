@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, Download, ArrowLeft, BookOpen } from "lucide-react";
+import { CheckCircle2, Download, ArrowLeft, BookOpen, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/config";
 
@@ -7,9 +7,18 @@ export const metadata = {
   title: "Purchase Complete — Thank You!",
 };
 
-export default function SuccessPage() {
+type SuccessSearchParams = Promise<{ demo?: string; session_id?: string }>;
+
+export default async function SuccessPage({
+  searchParams,
+}: {
+  searchParams: SuccessSearchParams;
+}) {
+  const params = await searchParams;
+  const isDemo = params.demo === "true" || !params.session_id;
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
       {/* Background glows */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-3xl" />
@@ -17,10 +26,49 @@ export default function SuccessPage() {
       <div className="dot-grid absolute inset-0 opacity-40" />
 
       <div className="relative z-10 max-w-lg w-full text-center space-y-8">
+        {isDemo && (
+          <div
+            className="rounded-2xl border px-4 py-3 text-left flex items-start gap-3"
+            style={{
+              background: `color-mix(in srgb, var(--brand-primary, #6366f1) 8%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-primary, #6366f1) 25%, transparent)`,
+            }}
+          >
+            <Sparkles
+              className="w-5 h-5 mt-0.5 flex-shrink-0"
+              style={{ color: "var(--brand-primary, #6366f1)" }}
+            />
+            <div className="space-y-1">
+              <p className="font-semibold text-sm text-page leading-snug">
+                Demo checkout — no payment was charged.
+              </p>
+              <p className="text-xs text-page-muted leading-relaxed">
+                Add <code className="font-mono">STRIPE_SECRET_KEY</code> and a real{" "}
+                <code className="font-mono">stripePriceId</code> to <code>.env.local</code> /
+                the wizard to enable live Stripe Checkout.{" "}
+                <Link
+                  href="/setup"
+                  className="underline underline-offset-2"
+                  style={{ color: "var(--brand-primary, #6366f1)" }}
+                >
+                  Open setup
+                </Link>
+                .
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Logo */}
         <Link href="/" className="inline-flex items-center gap-2.5 mb-4 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-            <BookOpen className="w-4 h-4 text-white" />
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg"
+            style={{
+              background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
+              boxShadow: `0 6px 16px color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
+            }}
+          >
+            <BookOpen className="w-4 h-4" style={{ color: "#fff" }} />
           </div>
           <span className="font-heading font-bold text-white text-lg">{siteConfig.brand.name}</span>
         </Link>
@@ -45,8 +93,8 @@ export default function SuccessPage() {
         {/* Download card */}
         <div className="glass rounded-2xl p-6 text-left space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center">
-              <Download className="w-5 h-5 text-indigo-400" />
+            <div className="w-10 h-10 rounded-xl bg-[var(--brand-primary)]/15 border border-[var(--brand-primary)]/20 flex items-center justify-center">
+              <Download className="w-5 h-5 text-[var(--brand-primary)]" />
             </div>
             <div>
               <p className="text-white font-semibold text-sm">{siteConfig.product.name}</p>
@@ -58,7 +106,7 @@ export default function SuccessPage() {
           <p className="text-slate-400 text-sm">
             Check your inbox for the download link. If you don&apos;t see it within 5 minutes,
             check your spam folder or{" "}
-            <a href="mailto:hello@launchkit.co" className="text-indigo-400 hover:text-indigo-300">
+            <a href="mailto:hello@launchkit.co" className="text-[var(--brand-primary)] hover:text-[var(--brand-accent)]">
               contact us
             </a>
             .
@@ -66,18 +114,18 @@ export default function SuccessPage() {
           <a
             href={siteConfig.leadMagnet.filePath}
             download
-            className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand-primary)] hover:text-[var(--brand-accent)] transition-colors"
           >
             <Download className="w-4 h-4" />
             Download directly
           </a>
         </div>
 
-        {siteConfig.preview?.bonusItems && siteConfig.preview.bonusItems.length > 0 && (
+        {siteConfig.sections.preview.bonusItems.length > 0 && (
           <div className="glass rounded-2xl p-6 text-left">
             <p className="text-white font-semibold text-sm mb-3">Your bonuses are also included:</p>
             <ul className="space-y-2">
-              {siteConfig.preview.bonusItems.map((bonus) => (
+              {siteConfig.sections.preview.bonusItems.map((bonus) => (
                 <li key={bonus} className="flex items-center gap-2.5 text-slate-400 text-sm">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                   {bonus}

@@ -50,7 +50,11 @@ export function Hero() {
     }
   };
 
-  const { product, leadMagnet, stats } = siteConfig;
+  const { product, leadMagnet } = siteConfig;
+  const section = siteConfig.sections.hero;
+  const stats = siteConfig.sections.pricing.stats;
+
+  if (!section.enabled) return null;
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
@@ -69,78 +73,99 @@ export function Hero() {
             className="flex flex-col gap-8"
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 self-start">
-              <span
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase"
-                style={{
-                  background: `color-mix(in srgb, var(--brand-primary) 15%, transparent)`,
-                  border: `1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
-                  color: `var(--brand-primary)`,
-                }}
-              >
-                <Star className="w-3 h-3 fill-current" />
-                {product.badge}
-              </span>
-            </div>
+            {section.eyebrow && (
+              <div className="inline-flex items-center gap-2 self-start">
+                <span
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase"
+                  style={{
+                    background: `color-mix(in srgb, var(--brand-primary) 15%, transparent)`,
+                    border: `1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
+                    color: `var(--brand-primary)`,
+                  }}
+                >
+                  <Star className="w-3 h-3 fill-current" />
+                  {section.eyebrow}
+                </span>
+              </div>
+            )}
 
             {/* Headline */}
             <div className="space-y-4">
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.05] tracking-tight">
-                {product.name.split(" ").slice(0, 3).join(" ")}{" "}
-                <span className="gradient-text">{product.name.split(" ").slice(3).join(" ")}</span>
+                {section.headline}
+                {section.headlineAccent && (
+                  <>
+                    {" "}
+                    <span className="gradient-text">{section.headlineAccent}</span>
+                  </>
+                )}
               </h1>
-              <p
-                className="text-xl font-semibold font-heading"
-                style={{ color: `var(--brand-primary)` }}
-              >
-                {product.tagline}
-              </p>
+              {section.subheadline && (
+                <p
+                  className="text-xl font-semibold font-heading"
+                  style={{ color: `var(--brand-primary)` }}
+                >
+                  {section.subheadline}
+                </p>
+              )}
             </div>
 
-            <p className="text-slate-400 text-lg leading-relaxed max-w-xl">
-              {product.description}
-            </p>
+            {section.description && (
+              <p className="text-slate-400 text-lg leading-relaxed max-w-xl">
+                {section.description}
+              </p>
+            )}
 
             {/* Social proof */}
-            <div className="flex items-center gap-4 flex-wrap">
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                ))}
-                <span className="text-sm text-slate-400 ml-1.5">{stats[0].value} founders</span>
+            {section.socialProofLabel && (
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  ))}
+                  <span className="text-sm text-slate-400 ml-1.5">
+                    {section.socialProofLabel}
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                onClick={handleBuyNow}
-                size="lg"
-                className="group text-white font-bold px-8 py-4 text-base rounded-xl transition-all duration-200 border-0 h-auto"
-                style={{
-                  background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
-                  boxShadow: `0 8px 32px color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
-                }}
-              >
-                Buy Now — ${product.price}
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button
-                onClick={() => setDialogOpen(true)}
-                variant="outline"
-                size="lg"
-                className="group bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-white font-semibold px-8 py-4 text-base rounded-xl h-auto transition-all duration-200"
-              >
-                <Download className="w-4 h-4 mr-2" style={{ color: `var(--brand-primary)` }} />
-                {leadMagnet.title}
-              </Button>
+              {section.ctaPrimary.label && (
+                <Button
+                  onClick={handleBuyNow}
+                  size="lg"
+                  className="group text-white font-bold px-8 py-4 text-base rounded-xl transition-all duration-200 border-0 h-auto"
+                  style={{
+                    background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
+                    boxShadow: `0 8px 32px color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
+                  }}
+                >
+                  {section.ctaPrimary.label}
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              )}
+              {section.ctaSecondary.label && (
+                <Button
+                  onClick={() => setDialogOpen(true)}
+                  variant="outline"
+                  size="lg"
+                  className="group bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-white font-semibold px-8 py-4 text-base rounded-xl h-auto transition-all duration-200"
+                >
+                  <Download className="w-4 h-4 mr-2" style={{ color: `var(--brand-primary)` }} />
+                  {section.ctaSecondary.label}
+                </Button>
+              )}
             </div>
 
             {/* Trust signals */}
-            <div className="flex items-center gap-2 text-slate-500 text-sm">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span>30-day money-back guarantee · Instant download · DRM-free</span>
-            </div>
+            {section.trustLine && (
+              <div className="flex items-center gap-2 text-slate-500 text-sm">
+                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                <span>{section.trustLine}</span>
+              </div>
+            )}
           </motion.div>
 
           {/* Right: Book mockup */}
@@ -156,7 +181,7 @@ export function Hero() {
                 style={{ background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))` }}
               />
 
-              {/* Book cover */}
+              {/* Book cover — intentionally dark in both themes (decorative). */}
               <div className="relative w-72 sm:w-80 lg:w-96 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
                 <div
                   className="w-full h-full flex flex-col items-center justify-center p-8 text-center relative"
@@ -168,16 +193,16 @@ export function Hero() {
                       className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-xl"
                       style={{ background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))` }}
                     >
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-8 h-8" style={{ color: "#fff" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                       </svg>
                     </div>
-                    <h3 className="font-heading font-bold text-white text-xl leading-tight">
+                    <h3 className="font-heading font-bold text-xl leading-tight" style={{ color: "#fff" }}>
                       {product.name}
                     </h3>
-                    <p className="text-white/70 text-sm font-medium">{product.tagline}</p>
-                    <div className="pt-4 border-t border-white/10">
-                      <p className="text-white/50 text-xs">
+                    <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.7)" }}>{product.tagline}</p>
+                    <div className="pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
                         {product.pages} pages · {product.format}
                       </p>
                     </div>
@@ -187,22 +212,24 @@ export function Hero() {
               </div>
 
               {/* Floating stat cards */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                className="absolute -bottom-4 -left-6 glass rounded-2xl px-4 py-3 shadow-xl"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                    <Star className="w-4 h-4 fill-emerald-400 text-emerald-400" />
+              {stats[0] && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.6 }}
+                  className="absolute -bottom-4 -left-6 glass rounded-2xl px-4 py-3 shadow-xl"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                      <Star className="w-4 h-4 fill-emerald-400 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm leading-none">{stats[0].value}</p>
+                      <p className="text-slate-400 text-xs mt-0.5">{stats[0].label}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-white font-bold text-sm leading-none">{stats[0].value}</p>
-                    <p className="text-slate-400 text-xs mt-0.5">Founders</p>
-                  </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              )}
 
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
@@ -230,12 +257,12 @@ export function Hero() {
 
       {/* Email signup dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="bg-[#111827] border border-white/10 text-white max-w-md rounded-2xl">
+        <DialogContent className="max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="font-heading text-xl font-bold text-white">
+            <DialogTitle className="font-heading text-xl font-bold">
               {leadMagnet.title}
             </DialogTitle>
-            <DialogDescription className="text-slate-400 mt-2">
+            <DialogDescription className="mt-2">
               {leadMagnet.description}
             </DialogDescription>
           </DialogHeader>
@@ -245,8 +272,8 @@ export function Hero() {
               <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto">
                 <ShieldCheck className="w-6 h-6 text-emerald-400" />
               </div>
-              <p className="text-white font-semibold">Check your inbox!</p>
-              <p className="text-slate-400 text-sm">We&apos;ve sent the free chapter. Enjoy!</p>
+              <p className="font-semibold text-page">Check your inbox!</p>
+              <p className="text-page-muted text-sm">We&apos;ve sent the free chapter. Enjoy!</p>
             </div>
           ) : (
             <form onSubmit={handleEmailSubmit} className="space-y-4 pt-2">
@@ -256,7 +283,7 @@ export function Hero() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-white/[0.05] border-white/10 text-white placeholder:text-slate-500 rounded-xl h-12"
+                className="rounded-xl h-12"
               />
               <Button
                 type="submit"
@@ -269,7 +296,7 @@ export function Hero() {
                 {loading ? "Sending…" : "Send Me the Free Chapter"}
                 {!loading && <ArrowRight className="w-4 h-4 ml-2" />}
               </Button>
-              <p className="text-center text-xs text-slate-500">
+              <p className="text-center text-xs text-page-subtle">
                 No spam, ever. Unsubscribe in one click.
               </p>
             </form>

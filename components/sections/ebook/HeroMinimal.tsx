@@ -14,13 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { siteConfig } from "@/lib/config";
 
-const BULLETS = [
-  "Proven framework used by 3,000+ founders",
-  "Step-by-step — from idea to first $1,000",
-  "Instant PDF + EPUB delivery",
-  "30-day money-back guarantee",
-];
-
 export function EbookHeroMinimal() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -58,6 +51,9 @@ export function EbookHeroMinimal() {
   };
 
   const { product, leadMagnet } = siteConfig;
+  const section = siteConfig.sections.hero;
+
+  if (!section.enabled) return null;
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
@@ -70,16 +66,17 @@ export function EbookHeroMinimal() {
       />
 
       <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-28">
-        {/* Category tag */}
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-          className="text-sm font-semibold tracking-widest uppercase mb-4"
-          style={{ color: "var(--brand-primary, #6366f1)" }}
-        >
-          {product.badge}
-        </motion.p>
+        {section.eyebrow && (
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="text-sm font-semibold tracking-widest uppercase mb-4"
+            style={{ color: "var(--brand-primary, #6366f1)" }}
+          >
+            {section.eyebrow}
+          </motion.p>
+        )}
 
         {/* Big headline — minimal, left-aligned */}
         <motion.h1
@@ -89,34 +86,42 @@ export function EbookHeroMinimal() {
           className="font-heading text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.06] tracking-tight mb-8"
           style={{ color: "var(--page-text)" }}
         >
-          {product.name}
+          {section.headline}
+          {section.headlineAccent && (
+            <>
+              {" "}
+              <span className="gradient-text">{section.headlineAccent}</span>
+            </>
+          )}
         </motion.h1>
 
-        {/* Tagline */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.14 }}
-          className="text-xl lg:text-2xl font-medium mb-6"
-          style={{ color: "var(--page-text-muted)" }}
-        >
-          {product.tagline}
-        </motion.p>
+        {section.subheadline && (
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.14 }}
+            className="text-xl lg:text-2xl font-medium mb-6"
+            style={{ color: "var(--page-text-muted)" }}
+          >
+            {section.subheadline}
+          </motion.p>
+        )}
 
-        {/* Bullet list */}
-        <motion.ul
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-col gap-3 mb-12"
-        >
-          {BULLETS.map((b) => (
-            <li key={b} className="flex items-center gap-3 text-base" style={{ color: "var(--page-text-muted)" }}>
-              <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: "var(--brand-primary, #6366f1)" }} />
-              {b}
-            </li>
-          ))}
-        </motion.ul>
+        {section.bullets.length > 0 && (
+          <motion.ul
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col gap-3 mb-12"
+          >
+            {section.bullets.map((b) => (
+              <li key={b} className="flex items-center gap-3 text-base" style={{ color: "var(--page-text-muted)" }}>
+                <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: "var(--brand-primary, #6366f1)" }} />
+                {b}
+              </li>
+            ))}
+          </motion.ul>
+        )}
 
         {/* Price + CTAs */}
         <motion.div
@@ -142,27 +147,31 @@ export function EbookHeroMinimal() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button
-              onClick={handleBuyNow}
-              size="lg"
-              className="h-13 px-8 rounded-xl text-white font-bold text-base shadow-xl border-0 hover:opacity-90 hover:scale-[1.02] transition-all"
-              style={{
-                background: `linear-gradient(135deg, var(--brand-primary, #6366f1), var(--brand-accent, #8b5cf6))`,
-              }}
-            >
-              Buy Now
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => setDialogOpen(true)}
-              className="h-13 px-6 rounded-xl font-semibold hover:bg-black/[0.04] dark:hover:bg-white/[0.05]"
-              style={{ color: "var(--page-text-muted)" }}
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Free sample
-            </Button>
+            {section.ctaPrimary.label && (
+              <Button
+                onClick={handleBuyNow}
+                size="lg"
+                className="h-13 px-8 rounded-xl text-white font-bold text-base shadow-xl border-0 hover:opacity-90 hover:scale-[1.02] transition-all"
+                style={{
+                  background: `linear-gradient(135deg, var(--brand-primary, #6366f1), var(--brand-accent, #8b5cf6))`,
+                }}
+              >
+                {section.ctaPrimary.label}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
+            {section.ctaSecondary.label && (
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => setDialogOpen(true)}
+                className="h-13 px-6 rounded-xl font-semibold hover:bg-black/[0.04] dark:hover:bg-white/[0.05]"
+                style={{ color: "var(--page-text-muted)" }}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                {section.ctaSecondary.label}
+              </Button>
+            )}
           </div>
         </motion.div>
       </div>

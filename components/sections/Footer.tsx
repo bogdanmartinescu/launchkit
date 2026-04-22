@@ -22,6 +22,15 @@ const LinkedinIcon = () => (
 
 export function Footer() {
   const year = new Date().getFullYear();
+  const footer = siteConfig.sections.footer;
+  const navbar = siteConfig.sections.navbar;
+  if (!footer.enabled) return null;
+
+  const description =
+    footer.description ||
+    (siteConfig.product.description.length > 120
+      ? `${siteConfig.product.description.slice(0, 120)}…`
+      : siteConfig.product.description);
 
   return (
     <footer className="border-t border-white/[0.06] py-12 lg:py-16">
@@ -30,92 +39,104 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2.5 group w-fit">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                <BookOpen className="w-4 h-4 text-white" />
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg"
+                style={{
+                  background: `linear-gradient(135deg, var(--brand-primary), var(--brand-accent))`,
+                  boxShadow: `0 6px 16px color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
+                }}
+              >
+                <BookOpen className="w-4 h-4" style={{ color: "#fff" }} />
               </div>
               <span className="font-heading font-bold text-white text-lg tracking-tight">
                 {siteConfig.brand.name}
               </span>
             </Link>
-            <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
-              {siteConfig.product.description.slice(0, 120)}…
-            </p>
+            <p className="text-slate-500 text-sm leading-relaxed max-w-xs">{description}</p>
             <div className="flex items-center gap-3">
-              <a
-                href={siteConfig.social.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg glass flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors"
-                aria-label="Twitter / X"
-              >
-                <XIcon />
-              </a>
-              <a
-                href={siteConfig.social.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg glass flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors"
-                aria-label="GitHub"
-              >
-                <GithubIcon />
-              </a>
-              <a
-                href={siteConfig.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg glass flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors"
-                aria-label="LinkedIn"
-              >
-                <LinkedinIcon />
-              </a>
+              {footer.social.twitter && (
+                <a
+                  href={footer.social.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-lg glass flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors"
+                  aria-label="Twitter / X"
+                >
+                  <XIcon />
+                </a>
+              )}
+              {footer.social.github && (
+                <a
+                  href={footer.social.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-lg glass flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors"
+                  aria-label="GitHub"
+                >
+                  <GithubIcon />
+                </a>
+              )}
+              {footer.social.linkedin && (
+                <a
+                  href={footer.social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-lg glass flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors"
+                  aria-label="LinkedIn"
+                >
+                  <LinkedinIcon />
+                </a>
+              )}
             </div>
           </div>
 
           {/* Quick links */}
-          <div>
-            <h4 className="font-heading font-semibold text-white text-sm mb-4">Quick Links</h4>
-            <ul className="space-y-2.5">
-              {siteConfig.nav.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className="text-slate-500 hover:text-white text-sm transition-colors"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {navbar.links.length > 0 && (
+            <div>
+              <h4 className="font-heading font-semibold text-white text-sm mb-4">
+                {footer.quickLinksHeading}
+              </h4>
+              <ul className="space-y-2.5">
+                {navbar.links.map((item) => (
+                  <li key={item.href}>
+                    <a
+                      href={item.href}
+                      className="text-slate-500 hover:text-white text-sm transition-colors"
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Contact */}
           <div>
-            <h4 className="font-heading font-semibold text-white text-sm mb-4">Contact</h4>
+            <h4 className="font-heading font-semibold text-white text-sm mb-4">
+              {footer.contactHeading}
+            </h4>
             <ul className="space-y-2.5">
-              <li>
-                <a
-                  href="mailto:hello@launchkit.co"
-                  className="text-slate-500 hover:text-white text-sm transition-colors"
-                >
-                  hello@launchkit.co
-                </a>
-              </li>
-              <li>
-                <Link
-                  href="/privacy"
-                  className="text-slate-500 hover:text-white text-sm transition-colors"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/terms"
-                  className="text-slate-500 hover:text-white text-sm transition-colors"
-                >
-                  Terms of Service
-                </Link>
-              </li>
+              {footer.contactEmail && (
+                <li>
+                  <a
+                    href={`mailto:${footer.contactEmail}`}
+                    className="text-slate-500 hover:text-white text-sm transition-colors"
+                  >
+                    {footer.contactEmail}
+                  </a>
+                </li>
+              )}
+              {footer.legalLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-slate-500 hover:text-white text-sm transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -123,11 +144,11 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/[0.06] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-slate-600 text-sm">
-            © {year} {siteConfig.brand.name}. All rights reserved.
+            © {year} {siteConfig.brand.name}. {footer.copyrightSuffix}
           </p>
-          <p className="text-slate-600 text-xs">
-            Built with Next.js &amp; Tailwind CSS
-          </p>
+          {footer.tagline && (
+            <p className="text-slate-600 text-xs">{footer.tagline}</p>
+          )}
         </div>
       </div>
     </footer>

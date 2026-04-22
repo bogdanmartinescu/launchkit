@@ -27,13 +27,15 @@ export function Navbar() {
   };
 
   const logoUrl = siteConfig.brand.logoUrl;
-  const ctaPrice = siteConfig.product.price;
+  const navbar = siteConfig.sections.navbar;
+  if (!navbar.enabled) return null;
   const ctaLabel =
-    siteConfig.templateType === "email-collection"
+    navbar.ctaLabel ||
+    (siteConfig.templateType === "email-collection"
       ? "Join Free"
       : siteConfig.templateType === "saas"
       ? "Start Free Trial"
-      : `Buy Now — $${ctaPrice}`;
+      : `Buy Now — $${siteConfig.product.price}`);
 
   return (
     <header
@@ -63,8 +65,14 @@ export function Navbar() {
               />
             ) : (
               <>
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--brand-primary,#6366f1)] to-[var(--brand-accent,#8b5cf6)] flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-shadow">
-                  <BookOpen className="w-4 h-4 text-white" />
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg transition-shadow"
+                  style={{
+                    background: `linear-gradient(135deg, var(--brand-primary, #6366f1), var(--brand-accent, #8b5cf6))`,
+                    boxShadow: `0 6px 16px color-mix(in srgb, var(--brand-primary, #6366f1) 30%, transparent)`,
+                  }}
+                >
+                  <BookOpen className="w-4 h-4" style={{ color: "#fff" }} />
                 </div>
                 <span className="font-heading font-bold text-page text-lg tracking-tight">
                   {siteConfig.brand.name}
@@ -75,7 +83,7 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
-            {siteConfig.nav.map((item) => (
+            {navbar.links.map((item) => (
               <button
                 key={item.href}
                 onClick={() => handleNavClick(item.href)}
@@ -88,17 +96,21 @@ export function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            {siteConfig.templateType !== "email-collection" && (
+            {navbar.showSignIn && (
               <button
                 onClick={() => handleNavClick("#pricing")}
                 className="text-sm font-medium text-page-muted hover:text-page transition-colors cursor-pointer"
               >
-                Sign In
+                {navbar.signInLabel}
               </button>
             )}
             <Button
               onClick={() => handleNavClick("#pricing")}
-              className="bg-gradient-to-r from-[var(--brand-primary,#6366f1)] to-[var(--brand-accent,#8b5cf6)] hover:opacity-90 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-200 border-0 cursor-pointer"
+              className="hover:opacity-90 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg transition-all duration-200 border-0 cursor-pointer"
+              style={{
+                background: `linear-gradient(135deg, var(--brand-primary, #6366f1), var(--brand-accent, #8b5cf6))`,
+                boxShadow: `0 10px 24px color-mix(in srgb, var(--brand-primary, #6366f1) 25%, transparent)`,
+              }}
             >
               {ctaLabel}
             </Button>
@@ -125,7 +137,7 @@ export function Navbar() {
           }}
         >
           <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
-            {siteConfig.nav.map((item) => (
+            {navbar.links.map((item) => (
               <button
                 key={item.href}
                 onClick={() => handleNavClick(item.href)}
@@ -137,7 +149,11 @@ export function Navbar() {
             <div className="pt-3 border-t mt-2" style={{ borderColor: "var(--page-border)" }}>
               <Button
                 onClick={() => handleNavClick("#pricing")}
-                className="w-full bg-gradient-to-r from-[var(--brand-primary,#6366f1)] to-[var(--brand-accent,#8b5cf6)] hover:opacity-90 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 border-0"
+                className="w-full hover:opacity-90 text-white font-semibold rounded-xl shadow-lg border-0"
+                style={{
+                  background: `linear-gradient(135deg, var(--brand-primary, #6366f1), var(--brand-accent, #8b5cf6))`,
+                  boxShadow: `0 10px 24px color-mix(in srgb, var(--brand-primary, #6366f1) 25%, transparent)`,
+                }}
               >
                 {ctaLabel}
               </Button>

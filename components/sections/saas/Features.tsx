@@ -31,6 +31,9 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 export function SaasFeatures() {
+  const section = siteConfig.sections.features;
+  if (!section.enabled || section.items.length === 0) return null;
+
   return (
     <section id="features" className="py-24 lg:py-32 relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-px bg-gradient-to-r from-transparent via-[var(--brand-primary)]/30 to-transparent" />
@@ -43,28 +46,34 @@ export function SaasFeatures() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span
-            className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase mb-4"
-            style={{
-              background: `color-mix(in srgb, var(--brand-primary) 15%, transparent)`,
-              border: `1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
-              color: `var(--brand-primary)`,
-            }}
-          >
-            Everything included
-          </span>
+          {section.eyebrow && (
+            <span
+              className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase mb-4"
+              style={{
+                background: `color-mix(in srgb, var(--brand-primary) 15%, transparent)`,
+                border: `1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
+                color: `var(--brand-primary)`,
+              }}
+            >
+              {section.eyebrow}
+            </span>
+          )}
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-            Built for speed.{" "}
-            <span className="gradient-text">Ready for scale.</span>
+            {section.heading}
+            {section.headingAccent && (
+              <>
+                {" "}
+                <span className="gradient-text">{section.headingAccent}</span>
+              </>
+            )}
           </h2>
-          <p className="text-slate-400 text-lg">
-            Every piece you need to go from idea to revenue, wired together and production-ready on
-            day one.
-          </p>
+          {section.subheading && (
+            <p className="text-slate-400 text-lg">{section.subheading}</p>
+          )}
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {siteConfig.features.map((feature, idx) => {
+          {section.items.map((feature, idx) => {
             const Icon = iconMap[feature.icon] ?? Zap;
             return (
               <motion.div
