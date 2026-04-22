@@ -44,7 +44,7 @@ export function EbookHeroMinimal() {
         body: JSON.stringify({ priceId: siteConfig.integrations.stripePriceId }),
       });
       const data = await res.json();
-      if (data.url) window.location.href = data.url;
+      if (data.url) window.location.assign(data.url);
     } catch {
       alert("Checkout unavailable. Please try again.");
     }

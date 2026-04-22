@@ -35,6 +35,8 @@ const BrandSchema = z.object({
   accentColor: z.string().default("#8b5cf6"),
   logoUrl: z.string().default(""),
   productImageUrl: z.string().default(""),
+  /** Open-Graph / Twitter card image. Shown when the URL is shared on social. */
+  ogImageUrl: z.string().default(""),
 });
 
 const ProductSchema = z.object({

@@ -21,7 +21,7 @@ export function SaasPricing() {
         body: JSON.stringify({ priceId: tier.stripePriceId }),
       });
       const data = await res.json();
-      if (data.url) window.location.href = data.url;
+      if (data.url) window.location.assign(data.url);
     } catch {
       alert("Checkout unavailable. Please try again.");
     }

@@ -16,6 +16,8 @@ const sora = Sora({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const ogImage = siteConfig.brand.ogImageUrl || siteConfig.brand.productImageUrl || undefined;
+
 export const metadata: Metadata = {
   title: `${siteConfig.product.name} — ${siteConfig.product.tagline}`,
   description: siteConfig.product.description,
@@ -23,11 +25,13 @@ export const metadata: Metadata = {
     title: siteConfig.product.name,
     description: siteConfig.product.description,
     type: "website",
+    images: ogImage ? [ogImage] : undefined,
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.product.name,
     description: siteConfig.product.description,
+    images: ogImage ? [ogImage] : undefined,
   },
 };
 

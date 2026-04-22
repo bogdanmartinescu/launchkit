@@ -32,7 +32,7 @@ export function MobilePremiumPricing() {
         body: JSON.stringify({ priceId: integrations.stripePriceId }),
       });
       const data = await res.json();
-      if (data.url) window.location.href = data.url;
+      if (data.url) window.location.assign(data.url);
     } catch {
       alert("Checkout unavailable. Please try again.");
     }

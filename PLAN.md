@@ -1,6 +1,6 @@
 # LaunchKit Landing — FREE & PRO Edition Plan
 
-Last updated: 2026-04-21
+Last updated: 2026-04-22
 Owner: @bogdanmartinescu
 Status: Draft for review
 
@@ -525,15 +525,20 @@ Edition: FREE + PRO | Effort: L | Priority: blocks everything
 
 **Exit criteria:** ✅ FREE site renders from 100% config-driven content. `npm run build` succeeds on both `LAUNCHKIT_EDITION=free` and `=pro`.
 
-### Phase 2 — Expanded FREE wizard
+### Phase 2 — Expanded FREE wizard ✅ SHIPPED
 Edition: FREE | Effort: M
 
-- [ ] Add "Copy" step (step 5) with textareas for hero headline, CTAs, newsletter, FAQ.
-- [ ] Implement [`components/setup/PreviewPane.tsx`](components/setup/PreviewPane.tsx) with `postMessage` bridge.
-- [ ] Add OG image upload field to the Branding step.
-- [ ] Wire `ImageUploadField` to all remaining FREE image slots (any missing testimonial avatars, logo-strip logos that are surfaced to FREE).
+- [x] Add "Copy" step (step 5) with textareas for hero headline, CTAs, newsletter, FAQ.
+- [x] Implement [`components/setup/PreviewPane.tsx`](components/setup/PreviewPane.tsx) with `postMessage` bridge (desktop-only; FREE refreshes on save, PRO hook in place).
+- [x] Add OG image upload field to the Branding step (wired through [`lib/schema.ts`](lib/schema.ts) `brand.ogImageUrl` + [`app/layout.tsx`](app/layout.tsx) metadata).
+- [x] Extract wizard primitives into [`components/setup/`](components/setup/): `WizardTheme` context, `Section`, `FieldGroup`, `ImageUploadField`, `ProviderCard`, `ProviderPickerGroup`, `TestConnectionButton`, `ProLockBadge`, `Disclosure`.
+- [x] Wire `ImageUploadField` to every FREE image slot surfaced in the wizard (logo, product image, OG image).
 
-**Exit criteria:** a FREE user can produce a launch-ready site without opening any `.ts` file.
+**Also shipped:**
+- Lint sweep — replaced six `window.location.href = …` mutations with `window.location.assign(…)` for React 19 compliance; dropped the `setState`-in-effect for template changes in favour of a direct `handleTemplateChange` callback; removed unused imports.
+- `buildSavePayload` + `mergeSections` helpers in [`app/setup/page.tsx`](app/setup/page.tsx) so the wizard strips empty overrides before writing, keeping `site.config.json` lean and letting template defaults do their job.
+
+**Exit criteria:** ✅ FREE user can produce a launch-ready site without opening any `.ts` file. `npm run lint` and `npx tsc --noEmit` clean; `/setup` compiles and saves on the dev server.
 
 ### Phase 3 — Integrations foundation ✅ FREE-SIDE SHIPPED
 Edition: FREE (refactor) + PRO (new providers) | Effort: L

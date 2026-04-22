@@ -1,12 +1,12 @@
 {
   "version": 2,
   "configured": true,
-  "templateType": "email-collection",
+  "templateType": "mobile-app",
   "theme": "light",
   "brand": {
     "name": "LaunchKit",
-    "primaryColor": "#10b981",
-    "accentColor": "#14b8a6",
+    "primaryColor": "#64748b",
+    "accentColor": "#3b82f6",
     "logoUrl": "",
     "productImageUrl": ""
   },
